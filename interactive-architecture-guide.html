@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropAI - Complete Interactive Architecture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+            <div class="header-content">
+                <h1>🌾 CropAI</h1>
+                <p>Complete Interactive System Architecture & Implementation Guide</p>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showTab('overview')">🏗️ Architecture Overview</div>
+            <div class="nav-tab" onclick="showTab('services')">⚙️ Service Details</div>
+            <div class="nav-tab" onclick="showTab('interactions')">🔄 Service Interactions</div>
+            <div class="nav-tab" onclick="showTab('dataflow')">📊 Data Flow</div>
+            <div class="nav-tab" onclick="showTab('api')">🔌 API Endpoints</div>
+            <div class="nav-tab" onclick="showTab('future')">🚀 Future Work</div>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="section">
+                <h2>🏗️ System Architecture Overview</h2>
+                <div class="mermaid">
+                    graph TB
+                        Client[👥 Client Application<br/>Web/Mobile]
+                        Gateway[🚪 API Gateway<br/>JWT Verification<br/>Rate Limiting<br/>Request Routing]
+                        AuthService[🔐 Auth Service<br/>User Management<br/>JWT Generation]
+                        CropService[🌱 Crop Service<br/>Posts & Comments<br/>Social Features]
+                        AIService[🤖 AI Service<br/>Gemini Integration<br/>Queue Processing]
+                        Gemini[🧠 Google Gemini AI<br/>Text & Image Analysis]
+                        Email[📧 Email Service<br/>Password Reset]
+                        AuthDB[(🗄️ Auth MongoDB<br/>User Data)]
+                        CropDB[(🗄️ Crop MongoDB<br/>Posts & Comments)]
+                        Redis[(⚡ Redis<br/>Message Queue)]
+                        
+                        Client -->|HTTPS Requests| Gateway
+                        Gateway -->|/api/v1/auth/*| AuthService
+                        Gateway -->|/api/v1/post/*| CropService
+                        Gateway -->|/api/v1/comment/*| CropService
+                        
+                        CropService -->|HTTP API| AIService
+                        AIService -->|Analysis Request| Gemini
+                        AIService -->|Callback| CropService
+                        AuthService -->|Email| Email
+                        
+                        AuthService <-->|CRUD| AuthDB
+                        CropService <-->|CRUD| CropDB
+                        AIService <-->|Queue| Redis
+                        
+                        classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+                        classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
+                        classDef service fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+                        classDef ai fill:#fce4ec,stroke:#880e4f,stroke-width:3px
+                        classDef database fill:#fff3e0,stroke:#e65100,stroke-width:3px
+                        classDef external fill:#f1f8e9,stroke:#33691e,stroke-width:3px
+                        
+                        class Client client
+                        class Gateway gateway
+                        class AuthService,CropService service
+                        class AIService ai
+                        class AuthDB,CropDB,Redis database
+                        class Gemini,Email external
+                </div>
+                
+                <div class="highlight-box">
+                    <h4>🎯 Key Architecture Principles</h4>
+                    <p>Microservices architecture with separated concerns, centralized authentication at gateway level, and event-driven AI processing through Redis queues.</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🔧 Technology Stack</h2>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <h3>Backend Framework</h3>
+                        <div class="tech-badge">Node.js</div>
+                        <div class="tech-badge">Express.js</div>
+                        <div class="tech-badge">TypeScript</div>
+                    </div>
+                    <div class="service-card">
+                        <h3>Databases</h3>
+                        <div class="tech-badge">MongoDB (Auth)</div>
+                        <div class="tech-badge">MongoDB (Posts)</div>
+                        <div class="tech-badge">Redis (Queue)</div>
+                    </div>
+                    <div class="service-card">
+                        <h3>Authentication</h3>
+                        <div class="tech-badge">JWT Tokens</div>
+                        <div class="tech-badge">bcrypt</div>
+                        <div class="tech-badge">Cookie Parser</div>
+                    </div>
+                    <div class="service-card">
+                        <h3>External</h3>
+                        <div class="tech-badge">Google Gemini AI</div>
+                        <div class="tech-badge">Nodemailer</div>
+                        <div class="tech-badge">Joi Validation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Services Tab -->
+        <div id="services" class="tab-content">
+            <div class="section">
+                <h2>⚙️ Service Breakdown</h2>
+                
+                <div class="service-grid">
+                    <div class="service-card">
+                        <h3>🚪 API Gateway</h3>
+                        <div class="service-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">Entry Point</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tech:</span>
+                                <span class="detail-value">TypeScript + Express</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Port:</span>
+                                <span class="detail-value">3000</span>
+                            </div>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleContent('gateway-details')">View Details</button>
+                        <div id="gateway-details" class="collapsible-content">
+                            <h4>Core Functions:</h4>
+                            <ul>
+                                <li>JWT token verification for all protected routes</li>
+                                <li>Rate limiting (100 requests per 5 minutes)</li>
+                                <li>Request proxying to backend services</li>
+                                <li>CORS and security headers management</li>
+                                <li>Centralized logging and monitoring</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h3>🔐 Auth Service</h3>
+                        <div class="service-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">Authentication</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tech:</span>
+                                <span class="detail-value">TypeScript + MongoDB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Port:</span>
+                                <span class="detail-value">8080</span>
+                            </div>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleContent('auth-details')">View Details</button>
+                        <div id="auth-details" class="collapsible-content">
+                            <h4>Core Functions:</h4>
+                            <ul>
+                                <li>User registration and login</li>
+                                <li>JWT token generation and refresh</li>
+                                <li>Password reset with email verification</li>
+                                <li>User profile management</li>
+                                <li>Dedicated MongoDB for user data</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h3>🌱 Crop Service</h3>
+                        <div class="service-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">Main Application</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tech:</span>
+                                <span class="detail-value">TypeScript + MongoDB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Port:</span>
+                                <span class="detail-value">8080</span>
+                            </div>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleContent('crop-details')">View Details</button>
+                        <div id="crop-details" class="collapsible-content">
+                            <h4>Core Functions:</h4>
+                            <ul>
+                                <li>Post creation, update, and deletion</li>
+                                <li>Comment system</li>
+                                <li>Like/unlike functionality</li>
+                                <li>Feed generation with pagination</li>
+                                <li>AI service integration for smart comments</li>
+                                <li>Separate MongoDB for social data</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h3>🤖 AI Service</h3>
+                        <div class="service-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">AI Processing</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tech:</span>
+                                <span class="detail-value">Node.js + Redis + Gemini</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Port:</span>
+                                <span class="detail-value">3002</span>
+                            </div>
+                        </div>
+                        <button class="toggle-btn" onclick="toggleContent('ai-details')">View Details</button>
+                        <div id="ai-details" class="collapsible-content">
+                            <h4>Core Functions:</h4>
+                            <ul>
+                                <li>Redis stream-based message processing</li>
+                                <li>Google Gemini AI integration</li>
+                                <li>Image and text content analysis</li>
+                                <li>Automated comment generation</li>
+                                <li>Asynchronous processing with callbacks</li>
+                                <li>Queue management and monitoring</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactions Tab -->
+        <div id="interactions" class="tab-content">
+            <div class="section">
+                <h2>🔄 Service Interaction Patterns</h2>
+                
+                <div class="interaction-map">
+                    <h3>🔐 Authentication Flow</h3>
+                    <div class="interaction-item">
+                        <div class="service-icon gateway-icon">GW</div>
+                        <span>API Gateway receives request with JWT token</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon gateway-icon">✓</div>
+                        <span>Gateway verifies token locally (no service call)</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon auth-icon">AS</div>
+                        <span>Routes to appropriate service if valid</span>
+                    </div>
+                </div>
+                
+                <div class="interaction-map">
+                    <h3>📝 Post Creation with AI</h3>
+                    <div class="interaction-item">
+                        <div class="service-icon crop-icon">CS</div>
+                        <span>Crop Service saves post to MongoDB</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon ai-icon">AI</div>
+                        <span>HTTP call to AI Service with post data</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon db-icon">R</div>
+                        <span>AI Service queues task in Redis</span>
+                    </div>
+                    <div class="interaction-item">
+                        <div class="service-icon db-icon">R</div>
+                        <span>Redis stream triggers background processing</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon ai-icon">🧠</div>
+                        <span>AI processes with Gemini API</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon crop-icon">CS</div>
+                        <span>Callback to Crop Service with result</span>
+                    </div>
+                </div>
+                
+                <div class="interaction-map">
+                    <h3>💬 Comment Processing</h3>
+                    <div class="interaction-item">
+                        <div class="service-icon crop-icon">CS</div>
+                        <span>User creates comment</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon ai-icon">AI</div>
+                        <span>Request AI reply generation</span>
+                        <div class="arrow">→</div>
+                        <div class="service-icon ai-icon">🧠</div>
+                        <span>Gemini analyzes context and generates reply</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Flow Tab -->
+        <div id="dataflow" class="tab-content">
+            <div class="section">
+                <h2>📊 Complete Data Flow Analysis</h2>
+                
+                <div class="flow-diagram">
+                    <h3>🔐 User Authentication Process</h3>
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Client Login Request</div>
+                            <div class="flow-description">User sends credentials to /api/v1/auth/login</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Gateway Routes to Auth Service</div>
+                            <div class="flow-description">No token verification needed for auth endpoints</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">3</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Auth Service Validates Credentials</div>
+                            <div class="flow-description">Checks against Auth MongoDB, uses bcrypt for password verification</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">4</div>
+                        <div class="flow-content">
+                            <div class="flow-title">JWT Token Generation</div>
+                            <div class="flow-description">Creates access token and refresh token</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">5</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Response with Tokens</div>
+                            <div class="flow-description">Returns JWT tokens to client via gateway</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flow-diagram">
+                    <h3>📝 Post Creation with AI Analysis</h3>
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Authenticated Post Request</div>
+                            <div class="flow-description">Client sends POST to /api/v1/post/create with JWT token</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Gateway Token Verification</div>
+                            <div class="flow-description">API Gateway verifies JWT token before routing</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">3</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Crop Service Processing</div>
+                            <div class="flow-description">Validates data, saves post to Crop MongoDB</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">4</div>
+                        <div class="flow-content">
+                            <div class="flow-title">AI Service Request</div>
+                            <div class="flow-description">HTTP call to AI Service: POST /api/store-post-data</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">5</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Redis Queue Processing</div>
+                            <div class="flow-description">AI Service stores data in Redis and triggers queue</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">6</div>
+                        <div class="flow-content">
+                            <div class="flow-title">Background AI Processing</div>
+                            <div class="flow-description">Stream listener processes with Gemini AI</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-number">7</div>
+                        <div class="flow-content">
+                            <div class="flow-title">AI Response Callback</div>
+                            <div class="flow-description">POST /api/v1/service/ai with generated comment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Code Tab -->
+        <div id="code" class="tab-content">
+            <div class="section">
+                <h2>💻 Key Code Implementation</h2>
+                
+                <h3>🚪 API Gateway - Service Proxy Configuration</h3>
+                <div class="code-block">
+                    <div class="code-title">api-gateway/src/config/services.ts</div>
+private static readonly serviceConfigs : ServiceConfig[] = [
+    {
+        path: "/api/v1/auth",
+        url: config.AUTH_SERVICE_URL,
+        pathRewrite: {"^/": "/api/v1/auth/"},
+        name: "auth-service",
+        timeout: 5000
+    },
+    {
+        path: "/api/v1/post",
+        url: config.POST_SERVICE_URL,
+        pathRewrite: {"^/": "/api/v1/post/"},
+        name: "post-service",
+        timeout: 50000
+    },
+    {
+        path: "/api/v1/comment",
+        url: config.POST_SERVICE_URL,
+        pathRewrite: {"^/": "/api/v1/comment/"},
+        name: "comment-service",
+        timeout: 5000
+    },
+]
+
+public static setUpProxy(app: Application): void {
+    this.serviceConfigs.forEach((service)=>{
+        const proxyOptions = this.createProxyOptions(service);
+        if (service.name === "auth-service"){
+            app.use(service.path, createProxyMiddleware(proxyOptions));
+        }
+        app.use(service.path, verifyToken, createProxyMiddleware(proxyOptions));
+    })
+}
+                </div>
+                
+                <h3>🌱 Crop Service - Post Creation with AI Integration</h3>
+                <div class="code-block">
+                    <div class="code-title">cropService/src/controllers/post/index.ts</div>
+export const createPost = async (req: Request, res: Response): Promise&lt;void&gt; => {
+    try {
+        const userData = req.user!;
+        const { error } = validatePost({user:userData.id, ...req.body});
+        if (error) {
+            res.error(400, error.details.map((d: JoiErrorDetail) => d.message).join(',\n'));
+            return;
+        }
+
+        const { description, images } = req.body;
+        const newPost = new Post({
+            user:userData.id,
+            description,
+            images: images || []
+        });
+
+        await newPost.save();
+        // Request AI comment generation
+        await requestCommentOnNewPost({
+            images: newPost.images, 
+            description, 
+            postId: newPost._id as string
+        });
+        
+        res.success({
+            status: 201,
+            message: 'Post created successfully'
+        });
+    } catch (err) {
+        console.error('Error in createPost controller:', err);
+        res.error(500, err.message || 'Post creation failed.');
+    }
+}
+                </div>
+                
+                <h3>🤖 AI Service - Redis Queue Processing</h3>
+                <div class="code-block">
+                    <div class="code-title">crop-ai-service/src/redis/streamListener.js</div>
+async function listenToStream() {
+  console.log("Listening to Redis stream...");
+  while (true) {
+    try {
+      const result = await redis.xread(
+        'BLOCK', 0,
+        'STREAMS', STREAM_KEY, lastId
+      );
+
+      const [stream, messages] = result[0];
+      for (const [id, fields] of messages) {
+        const fieldObj = {};
+        for (let i = 0; i < fields.length; i += 2) {
+          fieldObj[fields[i]] = fields[i + 1];
+        }
+        const dataId = fieldObj.dataId;
+        
+        // Fetch full post data from Redis
+        const postDataStr = await redis.get(`data:${dataId}`);
+        const postData = JSON.parse(postDataStr);
+
+        // Process with AI
+        await processAI(dataId, postData);
+        lastId = id;
+      }
+    } catch (err) {
+      console.error("Error reading Redis stream:", err);
+    }
+  }
+}
+                </div>
+                
+                <h3>🧠 AI Processing with Gemini</h3>
+                <div class="code-block">
+                    <div class="code-title">crop-ai-service/src/ai/processAI1.js</div>
+async function processAI(dataId, postData = null) {
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  try {
+    const prompt = postData.text || "";
+    
+    // Convert images to base64
+    let imageParts = [];
+    if (Array.isArray(postData.imageUrls)) {
+      for (const url of postData.imageUrls) {
+        const response = await axios.get(url, { responseType: 'arraybuffer' });
+        const base64 = Buffer.from(response.data, 'binary').toString('base64');
+        imageParts.push({
+          inlineData: {
+            data: base64,
+            mimeType: "image/jpeg"
+          }
+        });
+      }
+    }
+
+    const parts = [{ text: prompt }, ...imageParts];
+    const result = await model.generateContent({ contents: [{ parts }] });
+    const aiInsight = result.response.text();
+
+    // Save and send response back to main service
+    await saveAIResponse(dataId, aiInsight);
+    await axios.post(`${MAIN_SERVICE_URL}/api/v1/service/ai`, {
+      aiResponse: aiInsight,
+      metaData: postData.metaData || {}
+    });
+    
+    await redis.del(`data:${dataId}`);
+  } catch (err) {
+    console.error(`AI processing failed for ${dataId}:`, err.message);
+  }
+}
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Tab -->
+        <div id="api" class="tab-content">
+            <div class="section">
+                <h2>🔌 API Endpoints Reference</h2>
+                
+                <h3>🔐 Authentication Service</h3>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/auth/register</span>
+                    <p>User registration with email and password</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/auth/login</span>
+                    <p>User login, returns JWT tokens</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/auth/refresh</span>
+                    <p>Refresh JWT access token</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/auth/reset/request</span>
+                    <p>Request password reset email</p>
+                </div>
+                
+                <h3>🌱 Crop Service</h3>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/post/create</span>
+                    <p>Create new post with optional images</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/post/feed</span>
+                    <p>Get paginated feed of posts</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/post/like</span>
+                    <p>Like or unlike a post</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/comment/create</span>
+                    <p>Create comment on a post</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/comment/get/:postId</span>
+                    <p>Get comments for a specific post</p>
+                </div>
+                
+                <h3>🤖 AI Service</h3>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/store-post-data</span>
+                    <p>Queue post data for AI processing</p>
+                </div>
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/ai-response/:dataId</span>
+                    <p>Retrieve AI processing result</p>
+                </div>
+                
+                <h3>📄 Internal Service Callbacks</h3>
+                <div class="api-endpoint">
+                    <span class="api-method">POST</span>
+                    <span class="api-path">/api/v1/service/ai</span>
+                    <p>AI Service callback to Crop Service with generated content</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Future Work Tab -->
+        <div id="future" class="tab-content">
+            <div class="section">
+                <h2>🚀 Future Work & Enhancements</h2>
+                <div class="highlight-box">
+                    <h4>🎯 Roadmap Overview</h4>
+                    <p>Strategic improvements to enhance scalability, performance, security, and user experience across all services.</p>
+                </div>
+                
+                <div class="service-grid">
+                    <!-- API Gateway Future Work -->
+                    <div class="service-card">
+                        <h3>🚪 API Gateway Enhancements</h3>
+                        <button class="toggle-btn" onclick="toggleContent('gateway-future')">View Future Plans</button>
+                        <div id="gateway-future" class="collapsible-content">
+                            <h4>🔒 Advanced Security & Rate Limiting</h4>
+                            <ul>
+                                <li><strong>User-Based Rate Limiting:</strong> Implement per-user rate limits based on user roles (premium users get higher limits)</li>
+                            </ul>
+                            
+                            <h4>🔄 Advanced Routing & Load Balancing</h4>
+                            <ul>
+                                <li><strong>Service Discovery:</strong> Automatic service registration and health checks</li>
+                                <li><strong>Load Balancing:</strong> Round-robin, weighted, and health-based routing</li>
+                            </ul>
+                            
+                            <h4>📊 Monitoring & Analytics</h4>
+                            <ul>
+                                <li><strong>Real-time Metrics:</strong> Request latency, error rates, throughput monitoring</li>
+                                <li><strong>Alert System:</strong> Automated notifications for service degradation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Auth Service Future Work -->
+                    <div class="service-card">
+                        <h3>🔐 Auth Service Enhancements</h3>
+                        <button class="toggle-btn" onclick="toggleContent('auth-future')">View Future Plans</button>
+                        <div id="auth-future" class="collapsible-content">
+                            <h4>🔐 Advanced Authentication</h4>
+                            <ul>
+                                <li><strong>Multi-Factor Authentication (MFA):</strong> SMS, email, and authenticator app support</li>
+                                <li><strong>Social Login:</strong> Google, Facebook, GitHub OAuth integration</li>
+                            </ul>
+                            
+                            <h4>👥 User Management & Roles</h4>
+                            <ul>
+                                <li><strong>Role-Based Access Control (RBAC):</strong> Granular permission system</li>
+                                <li><strong>Account Linking:</strong> Link multiple auth providers to single account</li>
+                            </ul>
+                            
+                            <h4>🛡️ Security Enhancements</h4>
+                            <ul>
+                                <li><strong>Anomaly Detection:</strong> Unusual login pattern detection</li>
+                                <li><strong>Account Lockout:</strong> Smart lockout policies with progressive delays</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Crop Service Future Work -->
+                    <div class="service-card">
+                        <h3>🌱 Crop Service Enhancements</h3>
+                        <button class="toggle-btn" onclick="toggleContent('crop-future')">View Future Plans</button>
+                        <div id="crop-future" class="collapsible-content">
+                            <h4>📸 Advanced Media Handling</h4>
+                            <ul>
+                                <li><strong>Server-Side Upload:</strong> Implement Multer for secure file handling</li>
+                                <li><strong>Image Processing:</strong> Automatic resizing, compression, and format optimization</li>
+                            </ul>
+                            
+                            <h4>🧠 Enhanced Social Features</h4>
+                            <ul>
+                                <li><strong>Real-time Chat:</strong> Direct messaging between users</li>
+                                <li><strong>Advanced Search:</strong> Full-text search with filters and tags</li>
+                            </ul>
+                            
+                            <h4>📊 Analytics & Insights</h4>
+                            <ul>
+                                <li><strong>Recommendation Engine:</strong> Personalized content suggestions</li>
+                                <li><strong>User Insights:</strong> Personal activity and engagement statistics</li>
+                            </ul>
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <!-- AI Service Future Work -->
+                    <div class="service-card">
+                        <h3>🤖 AI Service Enhancements</h3>
+                        <button class="toggle-btn" onclick="toggleContent('ai-future')">View Future Plans</button>
+                        <div id="ai-future" class="collapsible-content">
+                            <h4><strong>1. </strong>Advanced Message Queue System</h4>
+                            
+                            <h4><strong>2. </strong>Dead Letter Queue (DLQ) Support</h4>
+                            <ul>
+                                <li><strong>Failure Handling:</strong> Automatic retry with exponential backoff for failed messages</li>
+                                <li><strong>DLQ Processing:</strong> Separate queue for messages that exceed retry limits</li>
+                            </ul>
+                            
+                            <h4><strong>3.  </strong> Horizontal Scaling with Consumer Groups</h4>
+                            <ul>
+                                <li><strong>Consumer Groups:</strong> Multiple worker instances processing messages concurrently</li>
+                                <li><strong>Auto-scaling:</strong> Dynamic scaling based on queue depth and processing load</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+           
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
